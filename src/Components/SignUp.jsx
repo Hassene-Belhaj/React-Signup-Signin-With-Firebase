@@ -102,13 +102,20 @@ const SignUp = () => {
     const userRef = useRef()
     const errRef = useRef()
 
+
+    const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
      
+    
+    const [email , setEmail] = useState('')
+    const [validEmail , setValidEmail] = useState(false)
+    const [emailFocus , setEmailFocus] = useState(false)
+
 
     const [user , setUser] = useState('')
-    const [validName , setValideName] = useState(false)
-    const [userfocus , setUserFocus] = useState(false)
+    const [validName , setValidName] = useState(false)
+    const [userFocus , setUserFocus] = useState(false)
 
     const [pwd , setPwd] = useState('')
     const [validPwd , setValidPwd] = useState(false)
@@ -125,23 +132,17 @@ const SignUp = () => {
     const [showPwd , setShowPwd] = useState(false)
     const [showMatchPwd , setShowMatchPwd] = useState(false)
 
-    // console.log(userRef);
-    // console.log(userfocus);
+    console.log(userRef);
+    console.log(userFocus);
 
     const handleSubmit = (e) => {
       e.preventDefault()
     }
     
     const handleShow = () => {
-      setInterval(() => { 
-        setShowPwd('') 
-      }, 5000)
-      return setShowPwd(!showPwd)
+        setShowPwd(!showPwd) 
+     
     }
-    
-    useEffect(()=>{
-    handleShow()  
-    },[])
 
     const handleShowMatch = () => {
     setShowMatchPwd(!showMatchPwd)  
@@ -152,9 +153,14 @@ useEffect(()=>{
 },[])
 
 useEffect(()=>{
-setValideName(USER_REGEX.test(user))
+setValidName(USER_REGEX.test(user))
 console.log(validName);
 },[user])
+
+useEffect(()=>{
+  setValidEmail(EMAIL_REGEX.test(email))
+  console.log(validEmail);
+  },[email])
 
 
 useEffect(() => {
@@ -172,7 +178,33 @@ setErrorMsg('')
     <Section>
         <Form onSubmit={handleSubmit} >
             <Title>Sign Up</Title>
-               <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error>
+               {/* <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error> */}
+
+               <FlexDiv>
+                <Label>Email Address</Label> 
+                <AiOutlineCheck style={{display : validEmail?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : validEmail || !email ? 'none' : 'block' }} color='red' size={15}  /> 
+            </FlexDiv>   
+            <InputDiv>
+            <Input
+                ref={userRef}
+                autoComplete='off'
+                // aria-invalid='true'
+                type='text'
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                onFocus={()=>setEmailFocus(true)}
+                onBlur={()=>setEmailFocus(false)}
+                
+                />
+              
+             </InputDiv>
+            <ErrorDiv ref={errRef} $display={emailFocus && !validEmail ? 1 : 0}>
+                <Error  aria-live="assertive">
+                  please enter a valid email
+                </Error>
+             </ErrorDiv>
+
             <FlexDiv>
                 <Label>Username</Label> 
                 <AiOutlineCheck style={{display : validName?  'block' : 'none'}} color='green' size={15}  /> 
@@ -182,7 +214,7 @@ setErrorMsg('')
             <Input
                 ref={userRef}
                 autoComplete='off'
-                aria-invalid={validName ?  false : true }
+                // aria-invalid='true'
                 type='text'
                 value={user}
                 onChange={(e)=>setUser(e.target.value)}
@@ -192,7 +224,7 @@ setErrorMsg('')
                 />
               
              </InputDiv>
-            <ErrorDiv ref={errRef} $display={!validName ? 1 : 0}>
+            <ErrorDiv ref={errRef} $display={userFocus && !validName ? 1 : 0}>
                 <Error  aria-live="assertive">
                 4 to 24 characters. <br/>
                 Must begin with a letter.<br/>
@@ -203,7 +235,7 @@ setErrorMsg('')
 
              <FlexDiv>
               <Label>Password</Label> 
-                <AiOutlineCheck style={{display : validPwd?  'block' : 'none'}} color='green' size={15}  /> 
+                 <AiOutlineCheck style={{display : validPwd?  'block' : 'none'}} color='green' size={15}  /> 
                 <AiOutlineClose style={{display : validPwd || !pwd ? 'none' : 'block' }} color='red' size={15}  /> 
             </FlexDiv> 
 
@@ -217,8 +249,8 @@ setErrorMsg('')
                     onFocus={()=>setPwdFocus(true)}
                     onBlur={()=>setPwdFocus(false)}                  
                   />
-                   <IconShowPwd style={{display : showPwd ? 'none' : 'block' }} onClick={handleShow} size={20}/>
-                   <IconHidePwd style={{display : showPwd ? 'block' : 'none' }} onClick={handleShow} size={20}/>
+                   {pwd ? <IconShowPwd style={{display :  showPwd ? 'none' : 'block' }} onClick={handleShow} size={20}/> : null}            
+                   {pwd ?  <IconHidePwd style={{display :  showPwd ? 'block' : 'none' }} onClick={handleShow} size={20}/> : null}  
              </InputDiv>
                <ErrorDiv ref={errRef} $display={pwdFocus && !validPwd  ? 1 : 0}>
                 <InfoIcon />
@@ -244,8 +276,8 @@ setErrorMsg('')
              onFocus={()=>setMatchFocus(true)}
              onBlur={()=>setMatchFocus(false)}
              />
-              <IconShowPwd style={{display : showMatchPwd ? 'none' : 'block' }} onClick={handleShowMatch} size={20}/>
-              <IconHidePwd style={{display : showMatchPwd ? 'block' : 'none' }} onClick={handleShowMatch} size={20}/>
+             {matchPwd ? <IconShowPwd style={{display : showMatchPwd ? 'none' : 'block' }} onClick={handleShowMatch} size={20}/>: null } 
+             {matchPwd ? <IconHidePwd style={{display : showMatchPwd ? 'block' : 'none' }} onClick={handleShowMatch} size={20}/>: null } 
              </InputDiv>
              <ErrorDiv ref={errRef} $display={matchFocus && !validMatch  ? 1 : 0}>
                 <InfoIcon />
