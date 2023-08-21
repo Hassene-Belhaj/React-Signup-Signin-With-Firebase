@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { AiOutlineCheck , AiFillInfoCircle , AiOutlineFieldTime , AiOutlineClose, AiFillCheckCircle} from 'react-icons/ai'
+import { AiOutlineCheck , AiFillInfoCircle , AiOutlineFieldTime , AiOutlineClose, AiFillCheckCircle, AiFillEye, AiFillEyeInvisible} from 'react-icons/ai'
 import { styled } from 'styled-components';
 
 
@@ -33,10 +33,29 @@ const Label = styled.label`
 padding-top :1rem ;
 margin: .5rem 1rem;
 `
+const InputDiv=styled.div`
+position: relative;
+`
+const IconShowPwd = styled(AiFillEye)`
+position: absolute;
+right: 2rem;
+top: 50%;
+transform: translateY(-50%);
+cursor: pointer;
+`
+
+const IconHidePwd = styled(AiFillEyeInvisible)`
+position: absolute;
+right: 2rem;
+top: 50%;
+transform: translateY(-50%);
+cursor: pointer;
+`
+
 const Input = styled.input`
 padding: .5rem;
 margin: 0 1rem;
-width: auto;
+width: 90%;
 border-radius: 5px;
 outline: none;
 border: .5px solid rgba(0,0,0,0.2);
@@ -78,6 +97,7 @@ display: flex;
 align-items: baseline;
 `
 
+
 const SignUp = () => {
     const userRef = useRef()
     const errRef = useRef()
@@ -100,40 +120,52 @@ const SignUp = () => {
 
     const [errMsg , setErrorMsg] = useState('')
     const [succes , setSucces] = useState(false)
+    
+    
+    const [showPwd , setShowPwd] = useState(false)
+    const [showMatchPwd , setShowMatchPwd] = useState(false)
 
-    console.log(userRef);
-    console.log(userfocus);
+    // console.log(userRef);
+    // console.log(userfocus);
 
     const handleSubmit = (e) => {
       e.preventDefault()
     }
+    
+    const handleShow = () => {
+      setInterval(() => { 
+        setShowPwd('') 
+      }, 5000)
+      return setShowPwd(!showPwd)
+    }
+    
+    useEffect(()=>{
+    handleShow()  
+    },[])
 
+    const handleShowMatch = () => {
+    setShowMatchPwd(!showMatchPwd)  
+    }
 
 useEffect(()=>{
   userRef.current.focus() ;
 },[])
 
 useEffect(()=>{
-const result = USER_REGEX.test(user)
-console.log(result)
-console.log(user)
-setValideName(true)
+setValideName(USER_REGEX.test(user))
+console.log(validName);
 },[user])
 
 
-useEffect(()=>{
-    const result = PWD_REGEX.test(user)
-    console.log(result)
-    console.log(pwd)
-    setValidPwd(true)
-    const match = pwd === matchPwd ;
-    setValidMatch(match)
-    },[])
+useEffect(() => {
+  setValidPwd(PWD_REGEX.test(pwd));
+  setValidMatch(pwd === matchPwd);
+  console.log(validPwd);
+}, [pwd, matchPwd])
 
 
 useEffect(()=>{
 setErrorMsg('')
-
 },[user , pwd , matchPwd])
 
   return (
@@ -143,74 +175,85 @@ setErrorMsg('')
                <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error>
             <FlexDiv>
                 <Label>Username</Label> 
-                {/* <AiOutlineCheck style={{display : validName ? '' : 'none' }} color='green' size={15}  />  */}
-                <AiOutlineClose style={{display : validName || !user ? '' : 'none' }} color='red' size={15}  /> 
+                <AiOutlineCheck style={{display : validName?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : validName || !user ? 'none' : 'block' }} color='red' size={15}  /> 
             </FlexDiv>   
+            <InputDiv>
             <Input
-             ref={userRef}
-             autoComplete='off'
-             aria-invalid={validName ?  false : true }
-             type='text'
-             value={user}
-             onChange={(e)=>setUser(e.target.value)}
-             onFocus={()=>setUserFocus(true)}
-             onBlur={()=>setUserFocus(false)}
+                ref={userRef}
+                autoComplete='off'
+                aria-invalid={validName ?  false : true }
+                type='text'
+                value={user}
+                onChange={(e)=>setUser(e.target.value)}
+                onFocus={()=>setUserFocus(true)}
+                onBlur={()=>setUserFocus(false)}
+                
+                />
               
-            />
-            <ErrorDiv ref={errRef} $display={errMsg ? 0 : 1}>
-                <InfoIcon />
+             </InputDiv>
+            <ErrorDiv ref={errRef} $display={!validName ? 1 : 0}>
                 <Error  aria-live="assertive">
                 4 to 24 characters. <br/>
                 Must begin with a letter.<br/>
                 Letters, numbers, underscores, hyphens allowed.<br/>
                 </Error>
              </ErrorDiv>
+
+
              <FlexDiv>
               <Label>Password</Label> 
-                {/* <AiOutlineCheck style={{display : validName ? '' : 'none' }} color='green' size={15}  />  */}
-                <AiOutlineClose style={{display : validName || !user ? '' : 'none' }} color='red' size={15}  /> 
+                <AiOutlineCheck style={{display : validPwd?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : validPwd || !pwd ? 'none' : 'block' }} color='red' size={15}  /> 
             </FlexDiv> 
-            
-            <Input
-             ref={userRef}
-             type='password'
-             value={pwd}
-             autoComplete='off'
-             onChange={(e)=>setPwd(e.target.value)}
-             onFocus={()=>setPwdFocus(true)}
-             onBlur={()=>setPwdFocus(false)}
-              
-            />
-               <ErrorDiv ref={errRef} $display={pwdFocus && !validPwd  ? 0 : 1}>
+
+            <InputDiv>
+                  <Input
+                    ref={userRef}
+                    type={showPwd ? 'text' : 'password'}
+                    value={pwd}
+                    autoComplete='off'
+                    onChange={(e)=>setPwd(e.target.value)}
+                    onFocus={()=>setPwdFocus(true)}
+                    onBlur={()=>setPwdFocus(false)}                  
+                  />
+                   <IconShowPwd style={{display : showPwd ? 'none' : 'block' }} onClick={handleShow} size={20}/>
+                   <IconHidePwd style={{display : showPwd ? 'block' : 'none' }} onClick={handleShow} size={20}/>
+             </InputDiv>
+               <ErrorDiv ref={errRef} $display={pwdFocus && !validPwd  ? 1 : 0}>
                 <InfoIcon />
                 <Error  aria-live="assertive">
                 8 to 24 characters.<br />
-               Must include uppercase and lowercase letters, a number and a special character.<br />
-              Allowed special characters: <Span aria-label="exclamation mark">!</Span> <Span aria-label="at symbol">@</Span> <Span aria-label="hashtag">#</Span> <Span aria-label="dollar sign">$</Span> <Span aria-label="percent">%</Span>
+                Must include uppercase and lowercase letters, a number and a special character.<br />
+                Allowed special characters: <Span aria-label="exclamation mark">!</Span> <Span aria-label="at symbol">@</Span> <Span aria-label="hashtag">#</Span> <Span aria-label="dollar sign">$</Span> <Span aria-label="percent">%</Span>
                 </Error>
               </ErrorDiv>
 
             <FlexDiv>
-                <Label>Confirm Password</Label> 
-                {/* <AiOutlineCheck style={{display : validName ? '' : 'none' }} color='green' size={15}  />  */}
-                <AiOutlineClose style={{display : validName || !user ? '' : 'none' }} color='red' size={15}  /> 
+              <Label>Confirm Password</Label> 
+                 <AiOutlineCheck style={{display : validMatch && matchPwd ?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : validMatch || !matchPwd ? 'none' : 'block' }} color='red' size={15}  /> 
             </FlexDiv> 
+            <InputDiv>
             <Input
              ref={userRef}
-             type='password'
+             type={showMatchPwd ? 'text' : 'password'}
              value={matchPwd}
              autoComplete='off'
              onChange={(e)=>setMatchPwd(e.target.value)}
              onFocus={()=>setMatchFocus(true)}
              onBlur={()=>setMatchFocus(false)}
-            />
-             <ErrorDiv ref={errRef} $display={matchFocus && !validMatch  ? 0 : 1}>
+             />
+              <IconShowPwd style={{display : showMatchPwd ? 'none' : 'block' }} onClick={handleShowMatch} size={20}/>
+              <IconHidePwd style={{display : showMatchPwd ? 'block' : 'none' }} onClick={handleShowMatch} size={20}/>
+             </InputDiv>
+             <ErrorDiv ref={errRef} $display={matchFocus && !validMatch  ? 1 : 0}>
                 <InfoIcon />
                 <Error  aria-live="assertive">
                 Must match the first password input field.
                 </Error>
               </ErrorDiv>
-            <Button >Sign up</Button>
+            <Button  disabled={!validName || !validPwd || !validMatch ? true : false} >Sign up</Button>
             
 
         </Form>
