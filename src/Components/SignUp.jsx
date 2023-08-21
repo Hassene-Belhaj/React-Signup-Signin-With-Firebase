@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineCheck , AiFillInfoCircle , AiOutlineFieldTime , AiOutlineClose, AiFillCheckCircle, AiFillEye, AiFillEyeInvisible} from 'react-icons/ai'
+import { useNavigate } from 'react-router';
 import { styled } from 'styled-components';
 
 
@@ -135,8 +136,11 @@ const SignUp = () => {
     console.log(userRef);
     console.log(userFocus);
 
+    const navigate = useNavigate()
+
     const handleSubmit = (e) => {
       e.preventDefault()
+      navigate('/signin')
     }
     
     const handleShow = () => {
