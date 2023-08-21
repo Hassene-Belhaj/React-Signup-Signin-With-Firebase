@@ -130,7 +130,6 @@ const SignIn = () => {
     
     
     const [showPwd , setShowPwd] = useState(false)
-    const [showMatchPwd , setShowMatchPwd] = useState(false)
 
     console.log(userRef);
     console.log(userFocus);
@@ -141,13 +140,10 @@ const SignIn = () => {
     
     const handleShow = () => {
         setShowPwd(!showPwd) 
-     
+    
     }
 
-    const handleShowMatch = () => {
-    setShowMatchPwd(!showMatchPwd)  
-    }
-
+ 
 useEffect(()=>{
   userRef.current.focus() ;
 },[])
@@ -176,9 +172,9 @@ setErrorMsg('')
 
   return (
     <Section>
-        <Form onSubmit={handleSubmit} >
+        <Form onSubmit={handleSubmit}>
             <Title>Sign in</Title>
-               {/* <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error> */}
+               <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error>
 
                <FlexDiv>
                 <Label>Email Address</Label> 
@@ -237,7 +233,7 @@ setErrorMsg('')
               </ErrorDiv> */}
 
          
-            <Button  disabled={!validName || !validPwd || !validMatch ? true : false} >Sign up</Button>
+            <Button>Sign up</Button>
             
 
         </Form>

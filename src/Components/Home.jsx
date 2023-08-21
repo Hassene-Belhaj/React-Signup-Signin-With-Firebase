@@ -9,7 +9,9 @@ text-align: center;
 const LinksDiv = styled.div`
 padding: 1rem 0;
 `
-const Title = styled.h3``
+const Title = styled.h3`
+padding: 2rem 0;
+`
 
 
 const Home = () => {

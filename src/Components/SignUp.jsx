@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineCheck , AiFillInfoCircle , AiOutlineFieldTime , AiOutlineClose, AiFillCheckCircle, AiFillEye, AiFillEyeInvisible} from 'react-icons/ai'
 import { useNavigate } from 'react-router';
 import { styled } from 'styled-components';
+import { useContextAuth } from '../ContextAuth/ContextAuth';
 
 
 const Section = styled.div`
@@ -14,6 +15,7 @@ margin: 5rem auto;
 
 const Error = styled.p`
 padding-left: .8rem;
+text-align: center;
 `
 
 const Title = styled.h2`
@@ -100,6 +102,13 @@ align-items: baseline;
 
 
 const SignUp = () => {
+
+
+    const {email , setEmail , validEmail , setValidEmail,emailFocus , setEmailFocus ,user , setUser,validName , setValidName , userFocus , setUserFocus ,pwd , setPwd ,validPwd , setValidPwd , pwdFocus , setPwdFocus ,matchPwd , setMatchPwd , validMatch , setValidMatch ,matchFocus , setMatchFocus ,showPwd , setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp }  = useContextAuth()
+    
+  
+  
+  
     const userRef = useRef()
     const errRef = useRef()
 
@@ -109,32 +118,9 @@ const SignUp = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
      
     
-    const [email , setEmail] = useState('')
-    const [validEmail , setValidEmail] = useState(false)
-    const [emailFocus , setEmailFocus] = useState(false)
 
-
-    const [user , setUser] = useState('')
-    const [validName , setValidName] = useState(false)
-    const [userFocus , setUserFocus] = useState(false)
-
-    const [pwd , setPwd] = useState('')
-    const [validPwd , setValidPwd] = useState(false)
-    const [pwdFocus , setPwdFocus] = useState(false)
-
-    const [matchPwd , setMatchPwd] = useState('')
-    const [validMatch , setValidMatch] = useState(false)
-    const [matchFocus , setMatchFocus] = useState(false)
-
-    const [errMsg , setErrorMsg] = useState('')
-    const [succes , setSucces] = useState(false)
-    
-    
-    const [showPwd , setShowPwd] = useState(false)
-    const [showMatchPwd , setShowMatchPwd] = useState(false)
-
-    console.log(userRef);
-    console.log(userFocus);
+    // console.log(userRef);
+    // console.log(userFocus);
 
     const navigate = useNavigate()
 
@@ -180,20 +166,20 @@ setErrorMsg('')
 
   return (
     <Section>
-        <Form onSubmit={handleSubmit} >
+        <Form onSubmit={handleSignUp} >
             <Title>Sign Up</Title>
-               {/* <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error> */}
-
+               {/* <Error ref={errRef} $display={errorMsg ? 1 : 0} aria-live="assertive">{errorMsg}</Error> */}
                <FlexDiv>
                 <Label>Email Address</Label> 
                 <AiOutlineCheck style={{display : validEmail?  'block' : 'none'}} color='green' size={15}  /> 
-                <AiOutlineClose style={{display : validEmail || !email ? 'none' : 'block' }} color='red' size={15}  /> 
+                <AiOutlineClose style={{display : validEmail || !email || errorMsg ? 'none' : 'block' }} color='red' size={15}  /> 
             </FlexDiv>   
             <InputDiv>
             <Input
                 ref={userRef}
                 autoComplete='off'
-                // aria-invalid='true'
+                aria-invalid={validName ? "false" : "true"}
+                autoCorrect='off'
                 type='text'
                 value={email}
                 onChange={(e)=>setEmail(e.target.value)}
@@ -203,11 +189,12 @@ setErrorMsg('')
                 />
               
              </InputDiv>
-            <ErrorDiv ref={errRef} $display={emailFocus && !validEmail ? 1 : 0}>
-                <Error  aria-live="assertive">
-                  please enter a valid email
+             {errorMsg ?  <ErrorDiv ref={errRef} $display='true'>
+                <Error aria-live="assertive">
+                 {errorMsg}
                 </Error>
-             </ErrorDiv>
+             </ErrorDiv> : null}
+           
 
             <FlexDiv>
                 <Label>Username</Label> 
