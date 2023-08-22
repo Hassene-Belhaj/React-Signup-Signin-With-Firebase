@@ -24,7 +24,7 @@ font-weight: 500;
 `
 
 const Form = styled.form`
-width: 400px;
+width: 500px;
 height: auto;
 display: flex;
 flex-direction: column;
@@ -104,10 +104,10 @@ align-items: baseline;
 const SignUp = () => {
 
 
-    const {email , setEmail , validEmail , setValidEmail,emailFocus , setEmailFocus ,user , setUser,validName , setValidName , userFocus , setUserFocus ,pwd , setPwd ,validPwd , setValidPwd , pwdFocus , setPwdFocus ,matchPwd , setMatchPwd , validMatch , setValidMatch ,matchFocus , setMatchFocus ,showPwd , setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp }  = useContextAuth()
+    const {email , setEmail , validEmail , setValidEmail ,emailFocus , setEmailFocus ,user , setUser,validName , setValidName , userFocus , setUserFocus ,pwd , setPwd ,validPwd , setValidPwd , pwdFocus , setPwdFocus ,matchPwd , setMatchPwd , validMatch , setValidMatch ,matchFocus , setMatchFocus ,showPwd , setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp , succes}  = useContextAuth()
     
   
-  
+  console.log(errorMsg);
   
     const userRef = useRef()
     const errRef = useRef()
@@ -124,10 +124,6 @@ const SignUp = () => {
 
     const navigate = useNavigate()
 
-    const handleSubmit = (e) => {
-      e.preventDefault()
-      navigate('/signin')
-    }
     
     const handleShow = () => {
         setShowPwd(!showPwd) 
@@ -162,7 +158,16 @@ useEffect(() => {
 
 useEffect(()=>{
 setErrorMsg('')
-},[user , pwd , matchPwd])
+},[email ,user , pwd , matchPwd])
+
+useEffect(()=>{
+if(succes) { 
+  setEmail('')
+  setUser('')
+  setPwd('')
+  setMatchPwd('')
+} 
+},[])
 
   return (
     <Section>
@@ -171,8 +176,8 @@ setErrorMsg('')
                {/* <Error ref={errRef} $display={errorMsg ? 1 : 0} aria-live="assertive">{errorMsg}</Error> */}
                <FlexDiv>
                 <Label>Email Address</Label> 
-                <AiOutlineCheck style={{display : validEmail?  'block' : 'none'}} color='green' size={15}  /> 
-                <AiOutlineClose style={{display : validEmail || !email || errorMsg ? 'none' : 'block' }} color='red' size={15}  /> 
+                <AiOutlineCheck style={{display : validEmail && !errorMsg ?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : !errorMsg ? 'none' : 'block' }} color='red' size={15}  /> 
             </FlexDiv>   
             <InputDiv>
             <Input
@@ -189,7 +194,7 @@ setErrorMsg('')
                 />
               
              </InputDiv>
-             {errorMsg ?  <ErrorDiv ref={errRef} $display='true'>
+              {errorMsg?  <ErrorDiv ref={errRef} $display='true'>
                 <Error aria-live="assertive">
                  {errorMsg}
                 </Error>

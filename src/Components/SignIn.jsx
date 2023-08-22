@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineCheck , AiFillInfoCircle , AiOutlineFieldTime , AiOutlineClose, AiFillCheckCircle, AiFillEye, AiFillEyeInvisible} from 'react-icons/ai'
 import { styled } from 'styled-components';
+import GoogleButton from 'react-google-button'
+import { useContextAuth } from '../ContextAuth/ContextAuth';
+import { Link } from 'react-router-dom';
 
 
 const Section = styled.div`
@@ -61,23 +64,19 @@ outline: none;
 border: .5px solid rgba(0,0,0,0.2);
 `
 const Button = styled.button`
-margin: 2rem 1rem;
+width: 90%;
+margin-top: 2rem;
+margin-bottom: 1rem;
+margin-left: auto;
+margin-right: auto;
 padding: .8rem;
 background-color: #fff;
 font-weight: 500;
 border-radius: 5px;
 border: .5px solid rgba(0,0,0,0.2);
 cursor: pointer;
-/* background-color: indigo;
-color: #fff;
-transition: all .3s ease-in-out;
-&:hover{
- opacity : 0.9 ;
-} */
 `
-const InfoIcon = styled(AiFillInfoCircle)`
-width: 3rem;
-`
+
 
 const ErrorDiv = styled.div`
 width: 90%;
@@ -90,7 +89,7 @@ margin: .5rem auto;
 border-radius: 5px;
 font-size: .8rem;
 `
-const Span = styled.span``
+const Text = styled.p``
 
 const FlexDiv = styled.div`
 display: flex;
@@ -102,41 +101,15 @@ const SignIn = () => {
     const userRef = useRef()
     const errRef = useRef()
 
+    const {email , setEmail , setEmailFocus,pwd , setPwd , setPwdFocus ,showPwd ,setShowPwd ,errorMsg , setErrorMsg , handleSignIn }  = useContextAuth()
 
-    const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
-    const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
      
     
-    const [email , setEmail] = useState('')
-    const [validEmail , setValidEmail] = useState(false)
-    const [emailFocus , setEmailFocus] = useState(false)
+   
 
+    // console.log(userRef);
+    // console.log(userFocus);
 
-    const [user , setUser] = useState('')
-    const [validName , setValidName] = useState(false)
-    const [userFocus , setUserFocus] = useState(false)
-
-    const [pwd , setPwd] = useState('')
-    const [validPwd , setValidPwd] = useState(false)
-    const [pwdFocus , setPwdFocus] = useState(false)
-
-    const [matchPwd , setMatchPwd] = useState('')
-    const [validMatch , setValidMatch] = useState(false)
-    const [matchFocus , setMatchFocus] = useState(false)
-
-    const [errMsg , setErrorMsg] = useState('')
-    const [succes , setSucces] = useState(false)
-    
-    
-    const [showPwd , setShowPwd] = useState(false)
-
-    console.log(userRef);
-    console.log(userFocus);
-
-    const handleSubmit = (e) => {
-      e.preventDefault()
-    }
     
     const handleShow = () => {
         setShowPwd(!showPwd) 
@@ -148,38 +121,23 @@ useEffect(()=>{
   userRef.current.focus() ;
 },[])
 
-useEffect(()=>{
-setValidName(USER_REGEX.test(user))
-console.log(validName);
-},[user])
 
-useEffect(()=>{
-  setValidEmail(EMAIL_REGEX.test(email))
-  console.log(validEmail);
-  },[email])
-
-
-useEffect(() => {
-  setValidPwd(PWD_REGEX.test(pwd));
-  setValidMatch(pwd === matchPwd);
-  console.log(validPwd);
-}, [pwd, matchPwd])
 
 
 useEffect(()=>{
 setErrorMsg('')
-},[user , pwd , matchPwd])
+},[email, pwd ])
 
   return (
     <Section>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSignIn}>
             <Title>Sign in</Title>
-               <Error ref={errRef} $display={errMsg ? 1 : 0} aria-live="assertive">{errMsg}</Error>
+               {/* <Error ref={errRef} $display={errorMsg ? 1 : 0} aria-live="assertive">{errorMsg}</Error> */}
 
                <FlexDiv>
                 <Label>Email Address</Label> 
-                <AiOutlineCheck style={{display : validEmail?  'block' : 'none'}} color='green' size={15}  /> 
-                <AiOutlineClose style={{display : validEmail || !email ? 'none' : 'block' }} color='red' size={15}  /> 
+                {/* <AiOutlineCheck style={{display : validEmail && !errorMsg ?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : !errorMsg ? 'none' : 'block' }} color='red' size={15}  />  */}
             </FlexDiv>   
             <InputDiv>
             <Input
@@ -191,23 +149,22 @@ setErrorMsg('')
                 onChange={(e)=>setEmail(e.target.value)}
                 onFocus={()=>setEmailFocus(true)}
                 onBlur={()=>setEmailFocus(false)}
-                
                 />
               
              </InputDiv>
-            {/* <ErrorDiv ref={errRef} $display={emailFocus && !validEmail ? 1 : 0}>
+            <ErrorDiv ref={errRef} $display={errorMsg && errorMsg !== 'wrong-password' ? 1 : 0}>
                 <Error  aria-live="assertive">
-                  please enter a valid email
+                  {errorMsg}
                 </Error>
-             </ErrorDiv> */}
+             </ErrorDiv>
 
           
 
 
              <FlexDiv>
               <Label>Password</Label> 
-                 <AiOutlineCheck style={{display : validPwd?  'block' : 'none'}} color='green' size={15}  /> 
-                <AiOutlineClose style={{display : validPwd || !pwd ? 'none' : 'block' }} color='red' size={15}  /> 
+                {/* <AiOutlineCheck style={{display : errorMsg?  'block' : 'none'}} color='green' size={15}  /> 
+                <AiOutlineClose style={{display : errorMsg ? 'none' : 'block' }} color='red' size={15}  />  */}
             </FlexDiv> 
 
             <InputDiv>
@@ -221,20 +178,26 @@ setErrorMsg('')
                     onBlur={()=>setPwdFocus(false)}                  
                   />
                    {pwd ? <IconShowPwd style={{display :  showPwd ? 'none' : 'block' }} onClick={handleShow} size={20}/> : null}            
-                   {pwd ?  <IconHidePwd style={{display :  showPwd ? 'block' : 'none' }} onClick={handleShow} size={20}/> : null}  
+                   {pwd ? <IconHidePwd style={{display :  showPwd ? 'block' : 'none' }} onClick={handleShow} size={20}/> : null}  
              </InputDiv>
-               {/* <ErrorDiv ref={errRef} $display={pwdFocus && !validPwd  ? 1 : 0}>
-                <InfoIcon />
+             <ErrorDiv ref={errRef} $display={errorMsg === 'wrong-password' ? 1 : 0}>
                 <Error  aria-live="assertive">
-                8 to 24 characters.<br />
-                Must include uppercase and lowercase letters, a number and a special character.<br />
-                Allowed special characters: <Span aria-label="exclamation mark">!</Span> <Span aria-label="at symbol">@</Span> <Span aria-label="hashtag">#</Span> <Span aria-label="dollar sign">$</Span> <Span aria-label="percent">%</Span>
+                  {errorMsg}
                 </Error>
-              </ErrorDiv> */}
+             </ErrorDiv>
+
 
          
-            <Button>Sign up</Button>
-            
+            <Button>Login</Button>
+
+             <Text style={{textAlign:'center'}}> or </Text>
+              
+            <GoogleButton style={{width:'90%',margin:'auto',marginBottom:'2rem',marginTop:'1rem',borderRadius:'2px'}} />
+
+             <Link to={'/signup'}  style={{color:'#000'}}>
+                <Text style={{textAlign:'center',paddingBottom:'2rem',fontSize:'.8rem'}}> Create an account </Text>
+             </Link>
+           
 
         </Form>
      </Section>

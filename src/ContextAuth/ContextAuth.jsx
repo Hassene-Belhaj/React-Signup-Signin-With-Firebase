@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { auth } from '../../Firebase'
 import { useNavigate } from 'react-router'
@@ -7,6 +7,10 @@ import { useNavigate } from 'react-router'
 const useContextG  = createContext()
 
 const ContextAuth = ({children}) => {
+
+
+    const [currentUser , setCurrentUser] = useState(null) 
+    
 
     const [email , setEmail] = useState('')
     const [validEmail , setValidEmail] = useState(false)
@@ -38,28 +42,71 @@ const handleSignUp =  async (e) => {
     e.preventDefault()
  try {
     await createUserWithEmailAndPassword(auth,email,pwd)
-    setSucces(true)
+    // setSucces(true)
     navigate('/signin')
  } catch (error) {
     if(error.code === 'auth/email-already-in-use'){
         console.log(error.code);
         setErrorMsg('email-already-in-use')
+      
     }
  }
 }
 
-// useEffect(()=>{
-// const unsubscribe = onAuthStateChanged(auth , (user)=> {
-//     setUser(user)
-//     console.log(user);
-// } )
+ 
+const handleSignIn = async (e) => {
+  e.preventDefault() ;
+try {
+   await signInWithEmailAndPassword(auth , email , pwd)
+   console.log('succes' , succes);
+   navigate('/')
+} 
+catch(error){
+   console.log(error.code);
+  
+   if(error.code === 'auth/invalid-email') {
+    setErrorMsg('invalid-email')
+    } 
+    else if(error.code === 'auth/user-not-found') {
+     setErrorMsg('user-not-found')
+    } 
+    else if (error.code === 'auth/missing-password') {
+     setErrorMsg('missing-password')
 
-// return () => unsubscribe()
+    } else if (error.code === 'auth/wrong-password') {
+     setErrorMsg('wrong-password')
+    }
+  } 
+ 
+}
 
-// },[])
+
+const LogOut = async () => {
+  try {
+    await signOut(auth)
+    setCurrentUser(null)
+  } catch (error) {
+    console.log(error.code);
+  }
+}
+
+
+useEffect(()=>{
+const unsubscribe = onAuthStateChanged(auth , (currentuser)=> {
+    setCurrentUser(currentuser)
+    setSucces(true)
+    console.log('succes' ,succes);
+    console.log(currentUser);
+} )
+
+return () => unsubscribe()
+
+},[])
 
   return (
-    <useContextG.Provider value={{email , setEmail , validEmail , setValidEmail,emailFocus , setEmailFocus , user , setUser,validName , setValidName , userFocus , setUserFocus ,pwd , setPwd ,validPwd , setValidPwd , pwdFocus , setPwdFocus ,matchPwd , setMatchPwd , validMatch , setValidMatch ,matchFocus , setMatchFocus ,showPwd , setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp}} >
+    <useContextG.Provider value={{currentUser , setCurrentUser , email , setEmail , validEmail , setValidEmail,emailFocus , setEmailFocus , user , setUser,validName , setValidName , userFocus , setUserFocus 
+    ,pwd , setPwd ,validPwd , setValidPwd , pwdFocus , setPwdFocus ,matchPwd , setMatchPwd , validMatch , setValidMatch ,matchFocus , setMatchFocus ,showPwd , 
+    setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp , handleSignIn , LogOut , succes}} >
         {children}
     </useContextG.Provider>
   )
