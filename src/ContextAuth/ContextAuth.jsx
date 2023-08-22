@@ -1,6 +1,6 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { auth } from '../../Firebase'
+import { Provider, auth } from '../../Firebase'
 import { useNavigate } from 'react-router'
 
 
@@ -80,11 +80,23 @@ catch(error){
  
 }
 
+const SigninwithGoogle = async() => {
+  try {
+    await signInWithPopup(auth , Provider)
+    setSucces(true)
+    navigate('/')
+
+  } catch (error) {
+    console.log(error.code)
+  }
+}
+
 
 const LogOut = async () => {
   try {
     await signOut(auth)
     setCurrentUser(null)
+    setSucces(false)
   } catch (error) {
     console.log(error.code);
   }
@@ -93,10 +105,10 @@ const LogOut = async () => {
 
 useEffect(()=>{
 const unsubscribe = onAuthStateChanged(auth , (currentuser)=> {
-    setCurrentUser(currentuser)
-    setSucces(true)
-    console.log('succes' ,succes);
-    console.log(currentUser);
+     setCurrentUser(currentuser)
+     setSucces(true)
+     console.log(currentUser);
+   
 } )
 
 return () => unsubscribe()
@@ -106,7 +118,7 @@ return () => unsubscribe()
   return (
     <useContextG.Provider value={{currentUser , setCurrentUser , email , setEmail , validEmail , setValidEmail,emailFocus , setEmailFocus , user , setUser,validName , setValidName , userFocus , setUserFocus 
     ,pwd , setPwd ,validPwd , setValidPwd , pwdFocus , setPwdFocus ,matchPwd , setMatchPwd , validMatch , setValidMatch ,matchFocus , setMatchFocus ,showPwd , 
-    setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp , handleSignIn , LogOut , succes}} >
+    setShowPwd ,showMatchPwd , setShowMatchPwd ,errorMsg , setErrorMsg , handleSignUp , handleSignIn , LogOut , succes , SigninwithGoogle}} >
         {children}
     </useContextG.Provider>
   )

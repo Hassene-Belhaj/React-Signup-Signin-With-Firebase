@@ -101,7 +101,7 @@ const SignIn = () => {
     const userRef = useRef()
     const errRef = useRef()
 
-    const {email , setEmail , setEmailFocus,pwd , setPwd , setPwdFocus ,showPwd ,setShowPwd ,errorMsg , setErrorMsg , handleSignIn }  = useContextAuth()
+    const {email , setEmail , setEmailFocus,pwd , setPwd , setPwdFocus ,showPwd ,setShowPwd ,errorMsg , setErrorMsg , handleSignIn , SigninwithGoogle }  = useContextAuth()
 
      
     
@@ -192,7 +192,7 @@ setErrorMsg('')
 
              <Text style={{textAlign:'center'}}> or </Text>
               
-            <GoogleButton style={{width:'90%',margin:'auto',marginBottom:'2rem',marginTop:'1rem',borderRadius:'2px'}} />
+            <GoogleButton onClick={SigninwithGoogle} style={{width:'90%',margin:'auto',marginBottom:'2rem',marginTop:'1rem',borderRadius:'2px'}} />
 
              <Link to={'/signup'}  style={{color:'#000'}}>
                 <Text style={{textAlign:'center',paddingBottom:'2rem',fontSize:'.8rem'}}> Create an account </Text>
